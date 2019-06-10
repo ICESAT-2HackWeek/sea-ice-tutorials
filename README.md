@@ -98,15 +98,13 @@ A coarse surface filtering method is employed to remove obviously erroneuous ret
 
 Provide a brief overview of the two-step filtering process
 
-Provide a brief overview of this classification scheme including the various surfaces that are included (three sea ice types, open water etc.)
-
-![Surface classification](./Images/Surface_classification.png?raw=true #"Surface classification, figure taken from the ATL07/10 ATBD document")
-
-
 A first-photon bias estimate is included in ATL07, based on system engineering with each height estimate. The expected biases are defined in the Cal-19 (an ICESat-2 document). 
 
 Subsurface-scattering, or volume scattering, is a bias that comes from photons that experience multiple scattering within the snow or ice before returning to the satellite.  This is not included in ATL07 but is something worth considering when usign the data
 
+Provide a brief overview of this classification scheme including the various surfaces that are included (three sea ice types, open water etc.)
+
+![Surface classification](./Images/Surface_classification.png?raw=true "Surface classification, figure taken from the ATL07/10 ATBD document")
 
 
 <!-- As mentioned earlier, at low photon rates an insignificant fraction of input events occur
