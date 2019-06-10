@@ -6,18 +6,15 @@ ICESat-2 hackweek repository for the sea ice tutorials. Primarily hosts the Jupy
 
 ## To do
 
-* Get the ATL10 files for Nov 15th (coincident with ATL03/07)
+* Get the ATL10 files for Nov 15th (coincident with the ATL03/07 datafiles)
 * Add some stuff in this README on ATL filename convention - reference Fernando's notebook.
-* provide some more info on the variables of interest.
-* Explore the ssh_flag and quality flags. Highlight issues of cloud filtering etc. 
-* Analyze the various beams! Show the consistency between strong and weak etc.
-* Show a freeboard derivation. Show how we go from ATL07 to ATL10. 
-* Maybe work backwards from the included data to derive elevation using ATL03 and the various ancillary products (geoid, tides, atmospheric corrections etc).
+* Analyze the various beams! Show the consistency between strong and weak etc. 
+* Provide a bit more info about the various ancillary products (geoid, tides, atmospheric corrections etc) applied to the ATL03 heights.
 * Show an example of reading in and processing a load of ATL07/10 files (maybe using dask).
 
 ## Setup
 
-This repo primarily hosts the Jupyter Notebooks needed for the hackweek tutorials. The notebooks should work without any extra steps if you're working in the ICESat-2 Pangeo environment that has been created for this hackweek. Just clone this repository into your Pangeo user account (git clone https://github.com/akpetty/ICESAT-2HackWeek-seaice). To run the notebooks locally, a conda environment file (is2seaiceenv_environment.yml) has been provided in this repo for you to generate a Python environment that includes all the revelant libraries you might need:
+This repo primarily hosts the Jupyter Notebooks needed for the hackweek tutorials. The notebooks should work without any extra steps if you're working in the ICESat-2 Pangeo environment that has been created for this hackweek. Just clone this repository into your Pangeo user account (git clone https://github.com/ICESAT-2HackWeek/sea-ice-tutorials). To run the notebooks locally, a conda environment file (is2seaiceenv_environment.yml) has been provided in this repo for you to generate a Python environment that includes all the revelant libraries you might need:
 ```
 conda env create -f is2seaiceenv_environment.yml
 ```
