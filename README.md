@@ -96,17 +96,11 @@ Arguably ATL07 is the most important IS2 product for sea ice users. ATL07 provid
 
 A coarse surface filtering method is employed to remove obviously erroneuous returns from background/subsurface/clouds etc.
 
-
-#![Coarse_surface_finding](./Images/Coarse_surface_finding.png?raw=true #"Coarse_surface_finding, figure taken from the ATL07/10 ATBD document")
-
-Provide a brief overview of this two-step filtering
-
-#![Fine_surface_finding](./Images/Fine_surface_finding.png?raw=true #"Fine_surface_finding, figure taken from the ATL07/10 ATBD document")
-
+Provide a brief overview of the two-step filtering process
 
 Provide a brief overview of this classification scheme including the various surfaces that are included (three sea ice types, open water etc.)
 
-#![Surface classification](./Images/Surface_classification.png?raw=true #"Surface classification, figure taken from the ATL07/10 ATBD document")
+![Surface classification](./Images/Surface_classification.png?raw=true #"Surface classification, figure taken from the ATL07/10 ATBD document")
 
 
 A first-photon bias estimate is included in ATL07, based on system engineering with each height estimate. The expected biases are defined in the Cal-19 (an ICESat-2 document). 
