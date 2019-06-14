@@ -6,11 +6,10 @@ ICESat-2 hackweek repository for the sea ice tutorials. Primarily hosts the Jupy
 
 ## To add
 
-* Get the ATL10 files for Nov 15th (coincident with the ATL03/07 datafiles)
 * Add some stuff in this README on ATL filename convention - reference Fernando's notebook.
-* Analyze the various beams! Show the consistency between strong and weak etc. 
 * Provide a bit more info about the various ancillary products (geoid, tides, atmospheric corrections etc) applied to the ATL03 heights.
-* Show an example of reading in and processing a load of ATL07/10 files (maybe using dask).
+* Add some info on ATL09 and the thickness product
+
 
 ## Setup
 
@@ -149,4 +148,9 @@ reflectance data. -->
 
 
 
+## Hack ideas/utilities
 
+ADD MORE
+
+* Analyze the various beams! Show the consistency between strong and weak etc. 
+* Show an example of reading in and processing a load of ATL07/10 files (maybe using dask).
