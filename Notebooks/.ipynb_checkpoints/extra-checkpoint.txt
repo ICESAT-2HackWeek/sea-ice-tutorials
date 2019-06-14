@@ -1,0 +1,10 @@
+extra code
+
+# df = ds.to_dataframe()1S=resample to 1 second slices.. (1T would be 1 minute)
+#dF03_resampled = dF03.resample('3T').mean()
+#dF03_resampled
+
+
+#import datetime as dt
+#datetimeT = dt.datetime(2018, 11, 10, 0, 0, 0)
+#datetimeT
