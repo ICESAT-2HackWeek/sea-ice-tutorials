@@ -2,7 +2,7 @@
 ### Alek Petty, June 2018   
 ICESat-2 hackweek repository for the sea ice tutorials. Primarily hosts the Jupyter notebooks which contain the individual tutorials, but also a few extra code snippets (see utils.py and readers.py) that may be of use for the hackathon.   
 
-![icesat2_seaice](./Images/icesat2_profiling.png?raw=true "ICESat-2 profiling the sea ice surface, taken from the ICESat-2 website (Satellite image courtesy of Orbital
+![icesat2_seaice](./Images/icesat2_seaice.png?raw=true "ICESat-2 profiling the sea ice surface, taken from the ICESat-2 website (Satellite image courtesy of Orbital
 Earth image illustrating AMSR-E sea ice courtesy of the NASA Scientific Visualization Studio)")
 
 ## To do
