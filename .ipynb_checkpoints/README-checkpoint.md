@@ -60,8 +60,9 @@ Good luck!
 * Examples of derived sea ice thicknesses.
 
 4. Hacking.ipynb (TBD)
-* Provide some scripts to batch analyze ATL07 or ATL10 data to do some roughness calculations.
-* Provide some initial thoughts and ideas of how to genearte a new, communnity led, roughness product.
+* Some extra example sof using ATL10 and NESOSIM snow data to derive thickness.
+* Gridding/projecting data using Cartopy
+* Provide some scripts to batch analyze ATL07 or ATL10 data to do some roughness/topography calculations?
 
 
 ## Background
