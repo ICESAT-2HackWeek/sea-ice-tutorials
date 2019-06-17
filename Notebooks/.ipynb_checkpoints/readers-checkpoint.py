@@ -14,21 +14,21 @@ def getATL03data(fileT, numpyout=False, beam='gt1l'):
     """ Pandas/numpy ATL03 reader
     Written by Alek Petty, June 2018 (alek.a.petty@nasa.gov)
 
-	I've picked out the variables from ATL03 I think are of most interest to sea ice users, but by no
+    I've picked out the variables from ATL03 I think are of most interest to sea ice users, but by no
     means is this an exhastive list. 
     See the xarray or dictionary readers to load in the more complete ATL03 dataset
     or explore the hdf5 files themselves (I like using the app Panpoly for this) to see what else you
     might want
     
-	Args:
-		fileT (str): File path of the ATL03 dataset
-		numpy (flag): Binary flag for outputting numpy arrays (True) or pandas dataframe (False)
-		beam (str): ICESat-2 beam (the number is the pair, r=strong, l=weak)
+    Args:
+        fileT (str): File path of the ATL03 dataset
+        numpy (flag): Binary flag for outputting numpy arrays (True) or pandas dataframe (False)
+        beam (str): ICESat-2 beam (the number is the pair, r=strong, l=weak)
         
-	returns:
-		either: select numpy arrays or a pandas dataframe
+    returns:
+        either: select numpy arrays or a pandas dataframe
 
-	"""
+    """
     
     # Open the file
     try:
@@ -39,16 +39,14 @@ def getATL03data(fileT, numpyout=False, beam='gt1l'):
     lons=ATL03[beam+'/heights/lon_ph'][:]
     lats=ATL03[beam+'/heights/lat_ph'][:]
     
-    # Along track distance from equator i think.
-    along_track_distance=ATL03[beam+'/heights/dist_ph_along'][:] 
-    
-    #  Nathan says it's the number of seconds since the GPS epoch on midnight Jan. 6, 1980 
+    #  Number of seconds since the GPS epoch on midnight Jan. 6, 1980 
     delta_time=ATL03[beam+'/heights/delta_time'][:] 
     
-    # #Add this value to delta time parameters to compute full gps_seconds
+    # #Add this value to delta time parameters to compute the full gps_seconds
     atlas_epoch=ATL03['/ancillary_data/atlas_sdp_gps_epoch'][:] 
     
     # Conversion of delta_time to a calendar date
+    # This function seems pretty convoluted but it works for now..Sure there is a simpler functionw e can use here instead.
     temp = ut.convert_GPS_time(atlas_epoch[0] + delta_time, OFFSET=0.0)
     
     # Express delta_time relative to start time of granule
@@ -60,7 +58,11 @@ def getATL03data(fileT, numpyout=False, beam='gt1l'):
     hour = temp['hour'][:].astype('int')
     minute = temp['minute'][:].astype('int')
     second = temp['second'][:].astype('int')
-
+    
+    dFtime=pd.DataFrame({'year':year, 'month':month, 'day':day, 
+                        'hour':hour, 'minute':minute, 'second':second})
+    
+    
     # Primary variables of interest
     
     # Photon height
@@ -77,9 +79,8 @@ def getATL03data(fileT, numpyout=False, beam='gt1l'):
         #--  3: medium
         #--  4: high
     signal_confidence=ATL03[beam+'/heights/signal_conf_ph'][:,2] 
-    print(signal_confidence.shape)
     
-    # Add photon rate, background rate etc to the reader here
+    # Add photon rate, background rate etc to the reader here if we want
     
     ATL03.close()
     
@@ -87,9 +88,12 @@ def getATL03data(fileT, numpyout=False, beam='gt1l'):
     
     dF = pd.DataFrame({'heights':heights, 'lons':lons, 'lats':lats,
                        'signal_confidence':signal_confidence, 
-                       'delta_time':delta_time_granule,'along_track_distance':along_track_distance,
-                       'year':year,'month':month, 'day':day, 'hour':hour, 'second':second})
-        
+                       'delta_time':delta_time_granule})
+    
+    # Add the datetime string
+    dFtimepd=pd.to_datetime(dFtime)
+    dF['datetime'] = pd.Series(dFtimepd, index=dF.index)
+    
     # Filter out high elevation values 
     #dF = dF[(dF['signal_confidence']>2)]
     # Reset row indexing
@@ -322,6 +326,10 @@ def getATL07data(fileT, numpy=False, beam='gt1r', maxElev=1e6):
     minute = temp['minute'][:].astype('int')
     second = temp['second'][:].astype('int')
     
+    dFtime=pd.DataFrame({'year':year, 'month':month, 'day':day, 
+                        'hour':hour, 'minute':minute, 'second':second})
+    
+    
     # Primary variables of interest
     
     # Beam segment height
@@ -381,10 +389,11 @@ def getATL07data(fileT, numpy=False, beam='gt1r', maxElev=1e6):
                            'delta_time':delta_time,
                            'along_track_distance':along_track_distance,
                            'height_segment_id':height_segment_id, 
-                           'photon_rate':photon_rate,'background_rate':background_rate,
-                           'year':year, 
-                           'month':month, 
-                           'day':day, 'hour':hour, 'second':second})
+                           'photon_rate':photon_rate,'background_rate':background_rate})
+        
+         # Add the datetime string
+        dFtimepd=pd.to_datetime(dFtime)
+        dF['datetime'] = pd.Series(dFtimepd, index=dF.index)
         
         # Filter out high elevation values 
         dF = dF[(dF['elev']<maxElev)]
