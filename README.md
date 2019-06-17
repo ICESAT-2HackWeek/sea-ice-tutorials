@@ -70,7 +70,7 @@ NASA's ICESat-2 launched succesfully in September 2018 from Vadenberg Airforce B
 
 ![icesat2_profiling](./Images/icesat2_profiling.png?raw=true "ICESat-2 profiling the sea ice surface, figure taken from the ATL07/10 ATBD document")
 
-ICESat-2 employs a photon-counting system to obtain high measurement sensitivity with lower resource (power) demands on the satellite platform compared to the analog waveform approach of the ICESat laser altimeter GLAS. The ATLAS instrument transmits laser pulses at 532 nm with a high pulse repetition frequency of 10 kHz. The ICESat-2 nominal orbit altitude of ~500 km results in laser footprints of ~17 m on the ground, which are separated by only ~0.7 m along-track (resulting in substantial overlap between the shots). This relatively small footprint size combined with the high pulse repetition frequency and  precise time of flight estimates were partly chosen to enable the measuremetns of sea surface height within leads to carry a precision of 3 cm or less. 
+ICESat-2 employs a photon-counting system to obtain high measurement sensitivity with lower resource (power) demands on the satellite platform compared to the analog waveform approach of the ICESat laser altimeter GLAS. The ATLAS instrument transmits laser pulses at 532 nm with a high pulse repetition frequency of 10 kHz. The ICESat-2 nominal orbit altitude of ~500 km results in laser footprints of ~17 m on the ground, which are separated by only ~0.7 m along-track (resulting in substantial overlap between the shots). This relatively small footprint size combined with the high pulse repetition frequency and  precise time of flight estimates were partly chosen to enable the measurements of sea surface height within leads to carry a precision of 3 cm or less. 
 
 The laser is split into 6 beams (three pairs of strong and weak beams) which provide individual profiles of elevation. The multiple beams address the need for unambiguous separation of ice sheet slope from height changes. For sea ice, this provides multiple profiles of sea ice and sea surface heights, increasing overall profiling coverage and enabling assessments of beam reliability. 
 
@@ -92,6 +92,9 @@ The ICESat-2 data products are provided in the Hierarchical Data Format – vers
 * How can we calculate sea ice roughness? What are the best metrics to use for this considering the spatial/temporal resolution of ICESat-2.
 * ATL07 in the marginal ice zone - how can we extend the capability of this product in regions of low ice concentration? This might be important for understanding the potential for polynya detection with ICESat-2.
 * Analyze the various beams! Show the consistency between strong and weak etc. Why might we want to use the weak beam for sea ice science?!
+* How do ew better bin data considering the spatial/temporal sampling of IS2.
+* Create some interative tools to display and explore the products - combined maps/time series etc (maybe using Bokeh or Plot.ly)
+
 
 
 ## To add to the repo during the hackweek

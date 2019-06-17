@@ -182,6 +182,27 @@ def get_psnlatslons(data_path, res=25):
     return lats_mask, lons_mask
 
 
+def getNESOSIM(fileSnowT, dateStrT):
+    """ Grab the NESOSIM data and pick the day from a given date string.
+        Uses the xarray package (files were generated using xarray so works nicely)..
+        
+        Returns an xarray Dataset
+    
+    """
+    
+    dN = xr.open_dataset(fileSnowT)
+
+    # Get NESOSIM snow depth and density data for that date
+    dNday = dN.sel(day=int(dateStrT))
+    
+    # Provide additional mask variable
+    mask = np.ones((dNday['longitude'].values.shape)).astype('int')
+    mask[np.where((dNday['snowDepth']>0.02)&(dNday['snowDepth']<1)&(dNday['iceConc']>0.15)&np.isfinite(dNday['density']))]=0
+    
+    dNday['mask'] = (('x', 'y'), mask)
+    return dNday
+
+
 def assignRegionMask(dF, mapProj, ancDataPath='../Data/'):
     """
     Grab the NSIDC region mask and add to dataframe as a new column
@@ -603,21 +624,22 @@ def convert_GPS_time(GPS_Time, OFFSET=0.0):
     """
 
     #-- PURPOSE: convert from GPS time to calendar dates
-    
-	#-- convert from standard GPS time to UNIX time accounting for leap seconds
-	#-- and adding the specified offset to GPS_Time
-	UNIX_Time = convert_GPS_to_UNIX(np.array(GPS_Time) + OFFSET)
-	#-- calculate Julian date from UNIX time and convert into calendar dates
-	#-- UNIX time: seconds from 1970-01-01 00:00:00 UTC
-	julian_date = (UNIX_Time/86400.0) + 2440587.500000
-	cal_date = convert_julian(julian_date)
-	#-- include UNIX times in output
-	cal_date['UNIX'] = UNIX_Time
-	#-- return the calendar dates and UNIX time
-	return cal_date
+
+    #-- convert from standard GPS time to UNIX time accounting for leap seconds
+    #-- and adding the specified offset to GPS_Time
+    UNIX_Time = convert_GPS_to_UNIX(np.array(GPS_Time) + OFFSET)
+    #-- calculate Julian date from UNIX time and convert into calendar dates
+    #-- UNIX time: seconds from 1970-01-01 00:00:00 UTC
+    julian_date = (UNIX_Time/86400.0) + 2440587.500000
+    cal_date = convert_julian(julian_date)
+    #-- include UNIX times in output
+    cal_date['UNIX'] = UNIX_Time
+    #-- return the calendar dates and UNIX time
+
+    return cal_date
 
 def convert_julian(JD, ASTYPE=None, FORMAT='dict'):
-	#-- convert to array if only a single value was imported
+    #-- convert to array if only a single value was imported
     # Written and provided by Tyler Sutterley
     
 	if (np.ndim(JD) == 0):
@@ -742,8 +764,9 @@ def convert_UNIX_to_GPS(UNIX_Time):
 	GPS_Time += n_leaps + offset
 	return GPS_Time
 
-#-- PURPOSE: Convert GPS Time to UNIX Time
+
 def convert_GPS_to_UNIX(GPS_Time):
+    #-- PURPOSE: Convert GPS Time to UNIX Time
 	#-- convert GPS_Time to UNIX without taking into account leap seconds
 	#-- (UNIX epoch: Jan 1, 1970 00:00:00, GPS epoch: Jan 6, 1980 00:00:00)
 	UNIX_Time = GPS_Time + 315964800
