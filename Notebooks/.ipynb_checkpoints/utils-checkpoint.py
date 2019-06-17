@@ -237,6 +237,8 @@ def assignRegionMask(dF, mapProj, ancDataPath='../Data/'):
     return dF
 
 def get_region_mask_sect(datapath, mplot, xypts_return=0):
+    """ Get NSIDC section mask data """
+    
     datatype='uint8'
     file_mask = datapath+'/sect_fixed_n.msk'
     # 1   non-region oceans
@@ -273,115 +275,335 @@ def get_region_mask_sect(datapath, mplot, xypts_return=0):
     else:
         return region_mask
     
+
+def getProcessedATL10ShotdataNCDF(dataPathT, yearStr='2018', monStr='*', dayStr='*', 
+                                      fNum=-1, beamStr='gt1r', vars=[], smoothingWindow=0):
+    """
+    Load ICESat-2 thickness data produced from the raw ATL10 segment data
+    By Alek Petty (June 2019)
+        
+    """
     
+    print(dataPathT+'IS2ATL10*'+yearStr+monStr+dayStr+'*'+'_'+beamStr+'.nc')
+    files=glob(dataPathT+'IS2ATL10*'+yearStr+monStr+dayStr+'*'+'_'+beamStr+'.nc')
+    print('Number of files:', size(files))
+    
+    #testFile = Dataset(files[0])
+    #print(testFile.variables.keys())
+    if (fNum>-0.5):
+        if (size(vars)>0):
+            IS2dataAll= xr.open_dataset(files[fNum], engine='h5netcdf', data_vars=vars)
+        else:
+            IS2dataAll= xr.open_dataset(files[fNum], engine='h5netcdf')
+    else:
+        # apparently autoclose assumed so no longer need to include the True flag
+        if (size(vars)>0):
+            IS2dataAll= xr.open_mfdataset(dataPathT+'/IS2ATL10*'+yearStr+monStr+dayStr+'*'+'_'+beamStr+'.nc', engine='h5netcdf', data_vars=vars, parallel=True)
+        else:
+            IS2dataAll= xr.open_mfdataset(dataPathT+'/IS2ATL10*'+yearStr+monStr+dayStr+'*'+'_'+beamStr+'.nc', engine='h5netcdf', parallel=True)
+        #IS2dataAll = pd.read_pickle(files[0])
+    print(IS2dataAll.info)
+    
+    #IS2dataAll=IS2dataAll[vars]
+    #print(IS2dataAll.info)
 
 
-"""
-convert_GPS_time.py (10/2017)
-Return the calendar date and time for given GPS time.
-Based on Tiffany Summerscales's PHP conversion algorithm
-	https://www.andrews.edu/~tzs/timeconv/timealgorithm.html
+    if (smoothingWindow>0):
+        # If we want to smooth the datasets
+        seg_length=IS2dataAll['seg_length']
+        
+        seg_weightedvarR=seg_length.rolling(index=smoothingWindow, center=True).mean()
+        seg_weightedvar=seg_weightedvarR[int(smoothingWindow/2):-int(smoothingWindow/2):smoothingWindow]
+       # print(seg_weightedvar)
 
-INPUTS:
-	GPS_Time: GPS time (standard = seconds since January 6, 1980 at 00:00)
+        seg_weightedvars=[]
+        ds = seg_weightedvar.to_dataset(name = 'seg_length')
+        #seg_weightedvars.append(seg_weightedvar)
+        # Skip the first one as that's always (should be) the seg_length
+        for var in vars[1:]:
+            print('Coarsening'+var+'...')
+            varIS2=IS2dataAll[var]
+            seg_weightedvarR=varIS2*seg_length.rolling(index=smoothingWindow, center=True).sum()/seg_length.rolling(index=smoothingWindow, center=True).sum()
+            seg_weightedvar=seg_weightedvarR[int(smoothingWindow/2):-int(smoothingWindow/2):smoothingWindow] 
+            #print(seg_weightedvar)
+            ds[var] = seg_weightedvar
 
-OUTPUTS:
-	month: Number of the desired month (1 = January, ..., 12 = December).
-	day: Number of day of the month.
-	year: Number of the desired year.
-	hour: hour of the day
-	minute: minute of the hour
-	second: second (and fractions of a second) of the minute.
+            #seg_weightedvars.append(seg_weightedvar)
+            print('Coarsened var')
+        #Merge the coarsened arrays
+        #seg_weightedvarsM=xr.merge(seg_weightedvars)
+        ds=ds.reset_index('index', drop=True)
 
-OPTIONS:
-	OFFSET: number of seconds to offset each GPS time
+        #print('Rechunking...')
+        #ds=ds.chunk(2000)
+        #print('Rechunked')
+        print(ds)
+        return ds
+    else:
 
-PYTHON DEPENDENCIES:
-	numpy: Scientific Computing Tools For Python (http://www.numpy.org)
-
-PROGRAM DEPENDENCIES:
-	convert_julian.py: convert Julian dates into calendar dates
-
-UPDATE HISTORY:
-	Updated 10/2017: added leap second from midnight 2016-12-31
-	Written 04/2016
-"""
+        return IS2dataAll
 
 
-#-- PURPOSE: Define GPS leap seconds
-def get_leaps():
-	leaps = [46828800, 78364801, 109900802, 173059203, 252028804, 315187205,
-		346723206, 393984007, 425520008, 457056009, 504489610, 551750411,
-		599184012, 820108813, 914803214, 1025136015, 1119744016, 1167264017]
-	return leaps
+def getNesosimDates(dF, snowPathT):
+    """ Get dates from NESOSIM files"""
 
-#-- PURPOSE: Test to see if any GPS seconds are leap seconds
-def is_leap(GPS_Time):
-	leaps = get_leaps()
-	Flag = np.zeros_like(GPS_Time, dtype=np.bool)
-	for leap in leaps:
-		count = np.count_nonzero(np.floor(GPS_Time) == leap)
-		if (count > 0):
-			indices, = np.nonzero(np.floor(GPS_Time) == leap)
-			Flag[indices] = True
-	return Flag
+    # This will come from the distinct rows of the IS-1 data eventually, 
+    # but for now the data only span a day or two, so not much change in snow depth..
+    dayS=dF['day'].iloc[0]
+    monthS=dF['month'].iloc[0]
+    monthF=dF['month'].iloc[-1]
+    yearS=dF['year'].iloc[0]
+    dateStr= getDate(dF['year'].iloc[0], dF['month'].iloc[0], dF['day'].iloc[0])
 
-#-- PURPOSE: Count number of leap seconds that have passed for each GPS time
-def count_leaps(GPS_Time):
-	leaps = get_leaps()
-	#-- number of leap seconds prior to GPS_Time
-	n_leaps = np.zeros_like(GPS_Time, dtype=np.uint)
-	for i,leap in enumerate(leaps):
-		count = np.count_nonzero(GPS_Time >= leap)
-		if (count > 0):
-			indices, = np.nonzero(GPS_Time >= leap)
-			# print(indices)
-			# pdb.set_trace()
-			n_leaps[indices] += 1
-	return n_leaps
+    print ('Date:', yearS, monthS, dayS)
+    #print (dateStr)
+    #print (dF['year'].iloc[-1], dF['month'].iloc[-1], dF['day'].iloc[-1])
 
-#-- PURPOSE: Convert UNIX Time to GPS Time
-def convert_UNIX_to_GPS(UNIX_Time):
-	#-- calculate offsets for UNIX times that occur during leap seconds
-	offset = np.zeros_like(UNIX_Time)
-	count = np.count_nonzero((UNIX_Time % 1) != 0)
-	if (count > 0):
-		indices, = np.nonzero((UNIX_Time % 1) != 0)
-		UNIX_Time[indices] -= 0.5
-		offset[indices] = 1.0
-	#-- convert UNIX_Time to GPS without taking into account leap seconds
-	#-- (UNIX epoch: Jan 1, 1970 00:00:00, GPS epoch: Jan 6, 1980 00:00:00)
-	GPS_Time = UNIX_Time - 315964800
-	leaps = get_leaps()
-	#-- calculate number of leap seconds prior to GPS_Time
-	n_leaps = np.zeros_like(GPS_Time, dtype=np.uint)
-	for i,leap in enumerate(leaps):
-		count = np.count_nonzero(GPS_Time >= (leap - i))
-		if (count > 0):
-			indices, = np.nonzero(GPS_Time >= (leap - i))
-			n_leaps[indices] += 1
-	#-- take into account leap seconds and offsets
-	GPS_Time += n_leaps + offset
-	return GPS_Time
+    # Find the right NESOSIM data file based on the freeboard dates
+    
+    fileNESOSIM = glob(snowPathT+'*'+str(yearS)+'-*'+'.nc')[0]
+    #if (monthS>8):
+    #fileNESOSIM = glob(snowPathT+'*'+str(yearS)+'-*'+'.nc')[0]
+    #else:
+    #   fileNESOSIM = glob(snowPathT+'*'+str(yearS-1)+'-*'+'.nc')[0]
 
-#-- PURPOSE: Convert GPS Time to UNIX Time
-def convert_GPS_to_UNIX(GPS_Time):
-	#-- convert GPS_Time to UNIX without taking into account leap seconds
-	#-- (UNIX epoch: Jan 1, 1970 00:00:00, GPS epoch: Jan 6, 1980 00:00:00)
-	UNIX_Time = GPS_Time + 315964800
-	#-- number of leap seconds prior to GPS_Time
-	n_leaps = count_leaps(GPS_Time)
-	UNIX_Time -= n_leaps
-	#-- check if GPS Time is leap second
-	Flag = is_leap(GPS_Time)
-	if Flag.any():
-		#-- for leap seconds: add a half second offset
-		indices, = np.nonzero(Flag)
-		UNIX_Time[indices] += 0.5
-	return UNIX_Time
+    if (monthS>5 & monthF==5):
+        print ('WARNING! LACK OF SNOW DATA')
 
-#-- PURPOSE: convert from GPS time to calendar dates
+    return fileNESOSIM, dateStr
+
+def getDate(year, month, day):
+    """ Get date string from year month and day"""
+
+    return str(year)+'%02d' %month+'%02d' %day
+
+def gridNESOSIMtoFreeboard(dF, mapProj, fileSnow, dateStr, outSnowVar='snowDepthN', outDensityVar='snowDensityN', returnMap=0):
+    """
+    Load relevant NESOSIM snow data file and assign to freeboard values
+
+    Args:
+        dF (data frame): Pandas dataframe
+        mapProj (basemap instance): Basemap map projection
+        fileSnow (string): NESOSIM file path
+        dateStr (string): date string
+        outSnowVar (string): Name of snow depth column
+        outDensityVar (string): Name of snow density column
+
+    Returns:
+        dF (data frame): dataframe updated to include colocated NESOSIM (and dsitributed) snow data
+
+    """
+
+    dN = xr.open_dataset(fileSnow)
+
+    # Get NESOSIM snow depth and density data for that date
+    # Should move this into the loop if there is a significant date cahgne in the freeboard data.
+    # Not done this to improve processing speed. 
+    dNday = dN.sel(day=int(dateStr))
+    
+    lonsN = array(dNday.longitude)
+    latsN = array(dNday.latitude)
+    xptsN, yptsN = mapProj(lonsN, latsN)
+
+    # Get dates at start and end of freeboard file
+    dateStrStart= getDate(dF['year'].iloc[0], dF['month'].iloc[0], dF['day'].iloc[0])
+    dateStrEnd= getDate(dF['year'].iloc[-1], dF['month'].iloc[-1], dF['day'].iloc[-1])
+    print('Check dates (should be within a day):', dateStr, dateStrStart, dateStrEnd)
+  
+    snowDepthNDay = array(dNday.snowDepth)
+    snowDensityNDay = array(dNday.density)
+    iceConcNDay = array(dNday.iceConc)
+    
+    # Remove data where snow depths less than 0 (masked).
+    # Might need to chek if I need to apply any other masks here.
+    mask=where((snowDepthNDay>0.01)&(snowDepthNDay<1)&(iceConcNDay>0.01)&np.isfinite(snowDensityNDay))
+
+    snowDepthNDay = snowDepthNDay[mask]
+    snowDensityNDay = snowDensityNDay[mask]
+    xptsNDay = xptsN[mask]
+    yptsNDay = yptsN[mask]
+
+    # Load into array, sppeds up later computation and may aid parallelization
+    freeboardsT=dF['freeboard'].values
+    xptsT=dF['xpts'].values
+    yptsT=dF['ypts'].values
+    
+    # I think it's better to declare array now so memory is allocated before the loop?
+    snowDepthGISs=ma.masked_all(size(freeboardsT))
+    snowDensityGISs=ma.masked_all(size(freeboardsT))
+    #snowDepthDists=ma.masked_all(size(freeboardsT))
+
+    #for x in prange(size(freeboardsT)):
+    for x in range(size(freeboardsT)):
+        
+        # Could embed the NESOSIM dates here
+        
+        # Use nearest neighbor to find snow depth at IS2 point
+        #snowDepthGISs[x] = griddata((xptsDay, yptsDay), snowDepthDay, (dF['xpts'].iloc[x], dF['ypts'].iloc[x]), method='nearest') 
+        #snowDensityGISs[x] = griddata((xptsDay, yptsDay), densityDay, (dF['xpts'].iloc[x], dF['ypts'].iloc[x]), method='nearest')
+
+        # Think this is the much faster way to find nearest neighbor!
+        dist = sqrt((xptsNDay-xptsT[x])**2+(yptsNDay-yptsT[x])**2)
+        index_min = np.argmin(dist)
+        snowDepthGISs[x]=snowDepthNDay[index_min]
+        snowDensityGISs[x]=snowDensityNDay[index_min]
+        #print(snowDepthNDay[index_min], densityNDay[index_min])
+        
+    dF[outSnowVar] = pd.Series(snowDepthGISs, index=dF.index)
+    dF[outDensityVar] = pd.Series(snowDensityGISs, index=dF.index)
+
+    # SNOW REDISTRIBUTION
+    #for x in range(size(freeboardsT)):
+        
+        # Find the mean freebaord in this vicinitiy
+        # ICESat-1 has a shot every 172 m, so around 600 shots = 100 km
+    #    meanFreeboard = ma.mean(freeboardsT[x-300:x+300])
+    #    snowDepthDists[x] = snowDistribution(snowDepthGISs[x], freeboardsT[x], meanFreeboard)
+
+    #dF[outSnowVar+'dist'] = pd.Series(snowDepthDists, index=dF.index)
+
+    #print ('Snow depth (m): ', snowDepthGIS)
+    #print ('Snow density (kg/m3): ', snowDensityGIS)
+    #print ('Snow depth (m): ', snowDepthDists)
+    
+    if (returnMap==1):
+        return dF, xptsN, yptsN, dNday, 
+    else:
+        return dF
+    
+def bindataSegment(x, y, z, seg, xG, yG, binsize=0.01, retbin=True, retloc=True):
+    """
+    Place unevenly spaced 2D data on a grid by 2D binning (nearest
+    neighbor interpolation) and weight using the IS2 segment lengths.
+    
+    Parameters
+    ----------
+    x : ndarray (1D)
+        The idependent data x-axis of the grid.
+    y : ndarray (1D)
+        The idependent data y-axis of the grid.
+    z : ndarray (1D)
+        The dependent data in the form z = f(x,y).
+    seg : ndarray (1D)
+        The segment length of the data points in the form z = seg(x,y).
+    binsize : scalar, optional
+        The full width and height of each bin on the grid.  If each
+        bin is a cube, then this is the x and y dimension.  This is
+        the step in both directions, x and y. Defaults to 0.01.
+    retbin : boolean, optional
+        Function returns `bins` variable (see below for description)
+        if set to True.  Defaults to True.
+    retloc : boolean, optional
+        Function returns `wherebins` variable (see below for description)
+        if set to True.  Defaults to True.
+   
+    Returns
+    -------
+    grid : ndarray (2D)
+        The evenly gridded data.  The value of each cell is the median
+        value of the contents of the bin.
+    bins : ndarray (2D)
+        A grid the same shape as `grid`, except the value of each cell
+        is the number of points in that bin.  Returns only if
+        `retbin` is set to True.
+    wherebin : list (2D)
+        A 2D list the same shape as `grid` and `bins` where each cell
+        contains the indicies of `z` which contain the values stored
+        in the particular bin.
+
+    Revisions
+    ---------
+    2010-07-11  ccampo  Initial version
+    """
+    # get extrema values.
+    xmin, xmax = xG.min(), xG.max()
+    ymin, ymax = yG.min(), yG.max()
+
+    # make coordinate arrays.
+    xi      = xG[0]
+    yi      = yG[:, 0] #np.arange(ymin, ymax+binsize, binsize)
+    xi, yi = np.meshgrid(xi,yi)
+
+    # make the grid.
+    grid           = np.zeros(xi.shape, dtype=x.dtype)
+    nrow, ncol = grid.shape
+    if retbin: bins = np.copy(grid)
+
+    # create list in same shape as grid to store indices
+    if retloc:
+        wherebin = np.copy(grid)
+        wherebin = wherebin.tolist()
+
+    # fill in the grid.
+    for row in prange(nrow):
+        for col in prange(ncol):
+            xc = xi[row, col]    # x coordinate.
+            yc = yi[row, col]    # y coordinate.
+
+            # find the position that xc and yc correspond to.
+            posx = np.abs(x - xc)
+            posy = np.abs(y - yc)
+            ibin = np.logical_and(posx < binsize/2., posy < binsize/2.)
+            ind  = np.where(ibin == True)[0]
+
+            # fill the bin.
+            bin = z[ibin]
+            segbin = seg[ibin]
+            if retloc: wherebin[row][col] = ind
+            if retbin: bins[row, col] = bin.size
+            if bin.size != 0:
+                binvalseg         = np.sum(bin*segbin)/np.sum(segbin)
+                grid[row, col] = binvalseg
+            else:
+                grid[row, col] = np.nan   # fill empty bins with nans.
+
+    # return the grid
+    if retbin:
+        if retloc:
+            return grid, bins, wherebin
+        else:
+            return grid, bins
+    else:
+        if retloc:
+            return grid, wherebin
+        else:
+            return grid
+        
 def convert_GPS_time(GPS_Time, OFFSET=0.0):
+    """
+    convert_GPS_time.py (10/2017)
+    Return the calendar date and time for given GPS time.
+    Written by Tyler Sutterley
+    Based on Tiffany Summerscales's PHP conversion algorithm
+        https://www.andrews.edu/~tzs/timeconv/timealgorithm.html
+
+    INPUTS:
+        GPS_Time: GPS time (standard = seconds since January 6, 1980 at 00:00)
+
+    OUTPUTS:
+        month: Number of the desired month (1 = January, ..., 12 = December).
+        day: Number of day of the month.
+        year: Number of the desired year.
+        hour: hour of the day
+        minute: minute of the hour
+        second: second (and fractions of a second) of the minute.
+
+    OPTIONS:
+        OFFSET: number of seconds to offset each GPS time
+
+    PYTHON DEPENDENCIES:
+        numpy: Scientific Computing Tools For Python (http://www.numpy.org)
+
+    PROGRAM DEPENDENCIES:
+        convert_julian.py: convert Julian dates into calendar dates
+
+    UPDATE HISTORY:
+        Updated 10/2017: added leap second from midnight 2016-12-31
+        Written 04/2016
+    """
+
+    #-- PURPOSE: convert from GPS time to calendar dates
+    
 	#-- convert from standard GPS time to UNIX time accounting for leap seconds
 	#-- and adding the specified offset to GPS_Time
 	UNIX_Time = convert_GPS_to_UNIX(np.array(GPS_Time) + OFFSET)
@@ -393,8 +615,11 @@ def convert_GPS_time(GPS_Time, OFFSET=0.0):
 	cal_date['UNIX'] = UNIX_Time
 	#-- return the calendar dates and UNIX time
 	return cal_date
+
 def convert_julian(JD, ASTYPE=None, FORMAT='dict'):
 	#-- convert to array if only a single value was imported
+    # Written and provided by Tyler Sutterley
+    
 	if (np.ndim(JD) == 0):
 		JD = np.array([JD])
 		SINGLE_VALUE = True
@@ -450,3 +675,88 @@ def convert_julian(JD, ASTYPE=None, FORMAT='dict'):
 		return (YEAR, MONTH, DAY, HOUR, MINUTE, SECOND)
 	elif (FORMAT == 'zip'):
 		return zip(YEAR, MONTH, DAY, HOUR, MINUTE, SECOND)
+
+    
+def get_leaps():
+    #-- PURPOSE: Define GPS leap seconds
+    # Written and provided by Tyler Sutterley
+    
+	leaps = [46828800, 78364801, 109900802, 173059203, 252028804, 315187205,
+		346723206, 393984007, 425520008, 457056009, 504489610, 551750411,
+		599184012, 820108813, 914803214, 1025136015, 1119744016, 1167264017]
+	return leaps
+
+
+def is_leap(GPS_Time):
+    #-- PURPOSE: Test to see if any GPS seconds are leap seconds
+    # Written and provided by Tyler Sutterley
+    
+	leaps = get_leaps()
+	Flag = np.zeros_like(GPS_Time, dtype=np.bool)
+	for leap in leaps:
+		count = np.count_nonzero(np.floor(GPS_Time) == leap)
+		if (count > 0):
+			indices, = np.nonzero(np.floor(GPS_Time) == leap)
+			Flag[indices] = True
+	return Flag
+
+
+def count_leaps(GPS_Time):
+    #-- PURPOSE: Count number of leap seconds that have passed for each GPS time
+    # Written and provided by Tyler Sutterley
+	leaps = get_leaps()
+	#-- number of leap seconds prior to GPS_Time
+	n_leaps = np.zeros_like(GPS_Time, dtype=np.uint)
+	for i,leap in enumerate(leaps):
+		count = np.count_nonzero(GPS_Time >= leap)
+		if (count > 0):
+			indices, = np.nonzero(GPS_Time >= leap)
+			# print(indices)
+			# pdb.set_trace()
+			n_leaps[indices] += 1
+	return n_leaps
+
+
+def convert_UNIX_to_GPS(UNIX_Time):
+    #-- PURPOSE: Convert UNIX Time to GPS Time
+    
+	#-- calculate offsets for UNIX times that occur during leap seconds
+	offset = np.zeros_like(UNIX_Time)
+	count = np.count_nonzero((UNIX_Time % 1) != 0)
+	if (count > 0):
+		indices, = np.nonzero((UNIX_Time % 1) != 0)
+		UNIX_Time[indices] -= 0.5
+		offset[indices] = 1.0
+	#-- convert UNIX_Time to GPS without taking into account leap seconds
+	#-- (UNIX epoch: Jan 1, 1970 00:00:00, GPS epoch: Jan 6, 1980 00:00:00)
+	GPS_Time = UNIX_Time - 315964800
+	leaps = get_leaps()
+	#-- calculate number of leap seconds prior to GPS_Time
+	n_leaps = np.zeros_like(GPS_Time, dtype=np.uint)
+	for i,leap in enumerate(leaps):
+		count = np.count_nonzero(GPS_Time >= (leap - i))
+		if (count > 0):
+			indices, = np.nonzero(GPS_Time >= (leap - i))
+			n_leaps[indices] += 1
+	#-- take into account leap seconds and offsets
+	GPS_Time += n_leaps + offset
+	return GPS_Time
+
+#-- PURPOSE: Convert GPS Time to UNIX Time
+def convert_GPS_to_UNIX(GPS_Time):
+	#-- convert GPS_Time to UNIX without taking into account leap seconds
+	#-- (UNIX epoch: Jan 1, 1970 00:00:00, GPS epoch: Jan 6, 1980 00:00:00)
+	UNIX_Time = GPS_Time + 315964800
+	#-- number of leap seconds prior to GPS_Time
+	n_leaps = count_leaps(GPS_Time)
+	UNIX_Time -= n_leaps
+	#-- check if GPS Time is leap second
+	Flag = is_leap(GPS_Time)
+	if Flag.any():
+		#-- for leap seconds: add a half second offset
+		indices, = np.nonzero(Flag)
+		UNIX_Time[indices] += 0.5
+	return UNIX_Time
+
+
+
