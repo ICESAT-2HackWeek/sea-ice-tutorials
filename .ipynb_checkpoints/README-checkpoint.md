@@ -6,8 +6,8 @@ ICESat-2 hackweek repository for the sea ice tutorials. Primarily hosts the Jupy
 Earth image illustrating AMSR-E sea ice courtesy of the NASA Scientific Visualization Studio)")
 
 ## To do
-* Read in and plot ice concentration for that day
-* Provide some demo thickness files? Maybe a zip file of all november along-track thicknesses?
+* Read in and plot november ice concentration maps from NSIDC. 
+* Provide more thickness files and example analyses
 
 
 ## Setup
