@@ -557,6 +557,4 @@ def getATL10data(fileT, beam='gt1r', maxFreeboard=10):
     # Reset row indexing
     dF=dF.reset_index(drop=True)
 
-   
-   
     return dF

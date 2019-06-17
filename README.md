@@ -89,14 +89,16 @@ The ICESat-2 data products are provided in the Hierarchical Data Format – vers
 
 ## Hack ideas/utilities
 
-* Analyze the various beams! Show the consistency between strong and weak etc. 
-* Show an example of reading in and processing a load of ATL07/10 files (maybe using dask).
-* Any other ideas?
+* How can we calculate sea ice roughness? What are the best metrics to use for this considering the spatial/temporal resolution of ICESat-2.
+* ATL07 in the marginal ice zone - how can we extend the capability of this product in regions of low ice concentration? This might be important for understanding the potential for polynya detection with ICESat-2.
+* Analyze the various beams! Show the consistency between strong and weak etc. Why might we want to use the weak beam for sea ice science?!
+
 
 ## To add to the repo during the hackweek
 
-* Add some info on ATL09 and the thickness product
-
+* Add some info on ATL09 and the thickness product.
+* Show an example of reading in and processing a load of ATL07/10 files (maybe using dask).
+* Add some NESOSIM snow depth/density data.
 
 ## References
 
@@ -106,4 +108,4 @@ Luthcke, S.B., Pennington, T., Rebold, T., Thomas,  T., 2018. Ice, Cloud, and la
 
 Markus, T., Neumann, T., Martino, A., Abdalati, W., Brunt, K., Csatho, B., Farrell, S., Fricker, H., Gardner, A., Harding, D., Jasinski, M., Kwok, R., Magruder, L., Lubin, D., Luthcke, S., Morison, J., Nelson, R., Neuenschwander, A., Palm, S., Popescu, S., Shum, C.K., Schutz, B.E., Smith, B., Yang, Y., Zwally, H.J., 2017. The Ice, Cloud and land Elevation Satellite-2 (ICESat-2): Science requirements, concept, and implementation. Remote Sensing of the Environment, 190, 260-273, doi: 10.1016/j.rse.2016.12.029.
 
-Martino, A.J., Bock, M.R., Jones R.L. III, Neumann, T.A., Hancock, D.W., Dabney, P.W., Webb, C.E., 2018. Ice Cloud and Land Elevation Satellite – 2 Project Algorithm Theoretical Basis Document for ATL02 (Level-1B) data product processing.  https://icesat-2.gsfc.nasa.gov/science/data_products.
+Martino, A.J., Bock, M.R., Jones R.L. III, Neumann, T.A., Hancock, D.W., Dabney, P.W., Webb, C.E., 2018. Ice Cloud and Land Elevation Satellite – 2 Project Algorithm Theoretical Basis Document for ATL02 (Level-1B) data product processing. 
