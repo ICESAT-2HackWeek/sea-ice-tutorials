@@ -1,5 +1,7 @@
 #Import necesary modules
 #Use shorter names (np, pd, plt) instead of full (numpy, matplotlib.pylot) for convenience when using
+
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
