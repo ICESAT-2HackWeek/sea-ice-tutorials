@@ -110,20 +110,23 @@ def getATL07data(fileT, numpy=False, beam='gt1r', maxElev=1e6):
     """ Pandas/numpy ATL07 reader
     Written by Alek Petty, June 2018 (alek.a.petty@nasa.gov)
 
-	I've picked out the variables from ATL07 I think are of most interest to sea ice users, but by no means is this an exhastive list. 
+    I've picked out the variables from ATL07 I think are of most interest to sea ice users, but by no means is this an exhastive list. 
     See the xarray or dictionary readers to load in the more complete ATL07 dataset
     or explore the hdf5 files themselves (I like using the app Panpoly for this) to see what else you might want
     
-	Args:
-		fileT (str): File path of the ATL07 dataset
-		numpy (flag): Binary flag for outputting numpy arrays (True) or pandas dataframe (False)
-		beam (str): ICESat-2 beam (the number is the pair, r=strong, l=weak)
+    Args:
+        fileT (str): File path of the ATL07 dataset
+        numpy (flag): Binary flag for outputting numpy arrays (True) or pandas dataframe (False)
+        beam (str): ICESat-2 beam (the number is the pair, r=strong, l=weak)
         maxElev (float): maximum surface elevation to remove anomalies
 
-	returns:
-		either: select numpy arrays or a pandas dataframe
+    returns:
+        either: select numpy arrays or a pandas dataframe
+        
+    Updates:
+        V2 (June 2018) used astropy to more simply generate a datetime instance form the gps time
 
-	"""
+    """
     
     # Open the file
     try:
@@ -134,29 +137,21 @@ def getATL07data(fileT, numpy=False, beam='gt1r', maxElev=1e6):
     lons=ATL07[beam+'/sea_ice_segments/longitude'][:]
     lats=ATL07[beam+'/sea_ice_segments/latitude'][:]
     
-    # Along track distance from the equator crossing to the segment center. 
-    # I removed the first point so it's relative to the start of the beam
+    # Along track distance 
+    # I removed the first point so it's distance relative to the start of the beam
     along_track_distance=ATL07[beam+'/sea_ice_segments/seg_dist_x'][:] - ATL07[beam+'/sea_ice_segments/seg_dist_x'][0]
     # Height segment ID (10 km segments)
     height_segment_id=ATL07[beam+'/sea_ice_segments/height_segment_id'][:] 
-    #  Nathan says it's the number of seconds since the GPS epoch on midnight Jan. 6, 1980 
+    # Number of seconds since the GPS epoch on midnight Jan. 6, 1980 
     delta_time=ATL07[beam+'/sea_ice_segments/delta_time'][:] 
-    # #Add this value to delta time parameters to compute full gps_seconds
+    # Add this value to delta time parameters to compute full gps time
     atlas_epoch=ATL07['/ancillary_data/atlas_sdp_gps_epoch'][:] 
 
-    # Conversion of delta_time to a calendar date
-    temp = ut.convert_GPS_time(atlas_epoch[0] + delta_time, OFFSET=0.0)
-
-    year = temp['year'][:].astype('int')
-    month = temp['month'][:].astype('int')
-    day = temp['day'][:].astype('int')
-    hour = temp['hour'][:].astype('int')
-    minute = temp['minute'][:].astype('int')
-    second = temp['second'][:].astype('int')
-    
-    dFtime=pd.DataFrame({'year':year, 'month':month, 'day':day, 
-                        'hour':hour, 'minute':minute, 'second':second})
-    
+    leapSecondsOffset=37
+    gps_seconds = atlas_epoch[0] + delta_time - leapSecondsOffset
+    # Use astropy to convert from gps time to datetime
+    tgps = Time(gps_seconds, format='gps')
+    tiso = Time(tgps, format='datetime')
     
     # Primary variables of interest
     
@@ -178,10 +173,9 @@ def getATL07data(fileT, numpy=False, beam='gt1r', maxElev=1e6):
     seg_type = ATL07[beam+'/sea_ice_segments/heights/height_segment_type'][:] # 0 = Cloud covered
     gauss_width = ATL07[beam+'/sea_ice_segments/heights/height_segment_w_gaussian'][:] # Width of Gaussian fit
 
-    
     # Geophysical corrections
     # NOTE: All of these corrections except ocean tides, DAC, 
-    # and geoid undulations are applied to the ATL03 photon heights.
+    # and geoid undulations were applied to the ATL03 photon heights.
     
     # AVISO dynamic Atmospheric Correction (DAC) including inverted barometer (IB) effect (±5cm)
     dac = ATL07[beam+'/sea_ice_segments/geophysical/height_segment_dac'][:] 
@@ -201,11 +195,13 @@ def getATL07data(fileT, numpy=False, beam='gt1r', maxElev=1e6):
     # Taken from ICESat and CryoSat-2, see Kwok and Morison [2015])
     mss = ATL07[beam+'/sea_ice_segments/geophysical/height_segment_mss'][:]
     
+    # Photon rate of the given segment
     photon_rate = ATL07[beam+'/sea_ice_segments/stats/photon_rate'][:]
+    
+    # Estimated background rate from sun angle, reflectance, surface slope
     background_rate = ATL07[beam+'/sea_ice_segments/stats/backgr_calc'][:]
     
     ATL07.close()
-    
     
     if numpy:
         # list the variables you want to output here..
@@ -217,11 +213,12 @@ def getATL07data(fileT, numpy=False, beam='gt1r', maxElev=1e6):
                            'delta_time':delta_time,
                            'along_track_distance':along_track_distance,
                            'height_segment_id':height_segment_id, 
-                           'photon_rate':photon_rate,'background_rate':background_rate})
+                           'photon_rate':photon_rate,'background_rate':background_rate,
+                          'datetime':tiso, 'mss': mss})
         
          # Add the datetime string
-        dFtimepd=pd.to_datetime(dFtime)
-        dF['datetime'] = pd.Series(dFtimepd, index=dF.index)
+        #dFtimepd=pd.to_datetime(dFtime)
+        #dF['datetime'] = pd.Series(dFtimepd, index=dF.index)
         
         # Filter out high elevation values 
         dF = dF[(dF['elev']<maxElev)]
