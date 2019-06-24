@@ -6,9 +6,8 @@ ICESat-2 hackweek repository for the sea ice tutorials. Primarily hosts the Jupy
 Earth image illustrating AMSR-E sea ice courtesy of the NASA Scientific Visualization Studio)")
 
 ## To do
-* Read in and plot november ice concentration maps from NSIDC. 
-* Provide more thickness files and example analyses
-
+* Add the November ice concentration maps from NSIDC. 
+* Provide a notebook showing how to read in and analyze the thickness analysis.
 
 ## Setup
 
@@ -75,7 +74,9 @@ ICESat-2 employs a photon-counting system to obtain high measurement sensitivity
 
 The laser is split into 6 beams (three pairs of strong and weak beams) which provide individual profiles of elevation. The multiple beams address the need for unambiguous separation of ice sheet slope from height changes. For sea ice, this provides multiple profiles of sea ice and sea surface heights, increasing overall profiling coverage and enabling assessments of beam reliability. 
 
-The beam configuration and their separation are shown above: the beams within each pair have different transmit energies (‘weak’ and‘strong’, with an energy ratio between them of approximately 1:4) and are separated by 90 m in the across-track direction. The beam pairs are separated by ~3.3 km in the across-track direction, and the strong and weak beams are separated by ~2.5 km in the along-track direction. The ICESat-2 products of most interest to the sea ice community are:
+The beam configuration and their separation are shown above: the beams within each pair have different transmit energies (‘weak’ and‘strong’, with an energy ratio between them of approximately 1:4) and are separated by 90 m in the across-track direction. The beam pairs are separated by ~3.3 km in the across-track direction, and the strong and weak beams are separated by ~2.5 km in the along-track direction. The observatory orientation is an important consideration, as this changes the labelling of the beams - i.e. 'gt1r' refers to the left-side strong beam when in the forward direction (beam 5) but the left-side weak beam when in the backward direction (beam 2). 
+
+The ICESat-2 products of most interest to the sea ice community are:
 
 * ATL03: Along-track photon heights (1. ATL03.ipynb tutorial) 
 * ATL07: Along-track segment surace heights (2. ATL07.ipynb tutorial) 
@@ -89,6 +90,8 @@ We provide in the notebooks a brief summary of these data products, but encourag
 The ICESat-2 data products are provided in the Hierarchical Data Format – version 5 (HDF-5) format and have recently been made publicly available through the National Snow and Ice Data Center (NSIDC - https://nsidc.org/data/icesat-2). See the hdf5 tutorial (https://github.com/ICESAT-2HackWeek/intro-hdf5) for more information on this data format.
 
 ## Hack ideas/utilities
+
+CHANGE THIS TO HIGHLIGHT THE HACK REPOS AND NOTEBOOKS.
 
 * How can we calculate sea ice roughness? What are the best metrics to use for this considering the spatial/temporal resolution of ICESat-2.
 * ATL07 in the marginal ice zone - how can we extend the capability of this product in regions of low ice concentration? This might be important for understanding the potential for polynya detection with ICESat-2.
