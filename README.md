@@ -1,6 +1,10 @@
-# ICESAT-2HackWeek-seaice
- 
-ICESat-2 hackweek repository for the sea ice tutorials. Primarily hosts the Jupyter notebooks which contain the individual tutorials, but also a few extra code snippets (see utils.py and readers.py) that may be of use for the hackathon.   
+# ICESAT-2HackWeek -sea-ice-tutorials
+
+Authors: Ellen Buckley and Alek Petty 
+Date: June 2020
+
+ICESat-2 hackweek repository for the sea ice tutorials. Primarily hosts the Jupyter notebooks which contain the individual tutorials. 
+
 
 ![icesat2_seaice](./Images/icesat2_seaice.png?raw=true "ICESat-2 profiling the sea ice surface, taken from the ICESat-2 website (Satellite image courtesy of Orbital
 Earth image illustrating AMSR-E sea ice courtesy of the NASA Scientific Visualization Studio)")
@@ -21,8 +25,7 @@ conda create -n is2env python=3.7 basemap xarray pandas netcdf4 pyproj scipy mat
 
 The hackweek includes extra tutorials on conda (and miniconda) so see those resources for more information. 
 
-The example data files are being stored on a Pangeo Amazon S3 data server. The notebooks incuded here provide a call you can run to quickly download these files to your Data directory. A gitignore file is included to ignore these hdf5 (.h5) files if you decide to fork this repo and push any local changes. 
-
+The example data files are being stored in the shared folder on Pangeo '/home/jovyan/tutorial-data/sea-ice/'. 
 
 
 ## Notebooks
