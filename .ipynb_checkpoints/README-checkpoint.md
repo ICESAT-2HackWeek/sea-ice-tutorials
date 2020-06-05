@@ -1,13 +1,11 @@
 # ICESAT-2HackWeek-seaice
-### Alek Petty, June 2018   
+ 
 ICESat-2 hackweek repository for the sea ice tutorials. Primarily hosts the Jupyter notebooks which contain the individual tutorials, but also a few extra code snippets (see utils.py and readers.py) that may be of use for the hackathon.   
 
 ![icesat2_seaice](./Images/icesat2_seaice.png?raw=true "ICESat-2 profiling the sea ice surface, taken from the ICESat-2 website (Satellite image courtesy of Orbital
 Earth image illustrating AMSR-E sea ice courtesy of the NASA Scientific Visualization Studio)")
 
-## To do
-* Add the November ice concentration maps from NSIDC. 
-* Provide a notebook showing how to read in and analyze the thickness analysis.
+
 
 ## Setup
 
@@ -25,20 +23,7 @@ The hackweek includes extra tutorials on conda (and miniconda) so see those reso
 
 The example data files are being stored on a Pangeo Amazon S3 data server. The notebooks incuded here provide a call you can run to quickly download these files to your Data directory. A gitignore file is included to ignore these hdf5 (.h5) files if you decide to fork this repo and push any local changes. 
 
-If you want to do this outside of the notebooks you can run the following commands from the terminal to get the data you need:
-```
-cp Data
-aws s3 cp s3://pangeo-data-upload-oregon/icesat2/ATL07-01_20181115003141_07240101_001_01.h5 .
-aws s3 cp s3://pangeo-data-upload-oregon/icesat2/ATL03_20181115022655_07250104_001_01.h5 .
-```
-and examples of how to upload  data  to S3:
 
-```
-aws s3 cp ATL03_20181115022655_07250104_001_01.h5 s3://pangeo-data-upload-oregon/icesat2/
-aws s3 cp ATL07-01_20181115003141_07240101_001_01.h5 s3://pangeo-data-upload-oregon/icesat2/
-```
-
-Good luck!
 
 ## Notebooks
 
@@ -57,11 +42,6 @@ Good luck!
 * Reading in, plotting and basic analysis of ATL10 data.
 * How to use ATL10 freebaords to produce sea ice thickness estimates.
 * Examples of derived sea ice thicknesses.
-
-4. Hacking.ipynb (TBD)
-* Some extra example sof using ATL10 and NESOSIM snow data to derive thickness.
-* Gridding/projecting data using Cartopy
-* Provide some scripts to batch analyze ATL07 or ATL10 data to do some roughness/topography calculations?
 
 
 ## Background
@@ -82,30 +62,12 @@ The ICESat-2 products of most interest to the sea ice community are:
 * ATL07: Along-track segment surace heights (2. ATL07.ipynb tutorial) 
 * ATL09: Cloud products (no direct tutorial provided, used mainly in ATL07 production for cloud filtering)
 * ATL10: Along-track segment (and 10 km swath) freeboards (3. ATL10.ipynb tutorial) 
-* ATL20: Gridded freeboard (notebook tbd)
-* Unofficial along-track and gridded sea ice thickness products through NASA GSFC (notebook tbd)
+* ATL20: Gridded freeboard 
 
 We provide in the notebooks a brief summary of these data products, but encourage the user to read the ATBD or references provided above and at the start of the Jupyter Notebooks for the more complete (and probably accurate) descriptions.
 
 The ICESat-2 data products are provided in the Hierarchical Data Format – version 5 (HDF-5) format and have recently been made publicly available through the National Snow and Ice Data Center (NSIDC - https://nsidc.org/data/icesat-2). See the hdf5 tutorial (https://github.com/ICESAT-2HackWeek/intro-hdf5) for more information on this data format.
 
-## Hack ideas/utilities
-
-CHANGE THIS TO HIGHLIGHT THE HACK REPOS AND NOTEBOOKS.
-
-* How can we calculate sea ice roughness? What are the best metrics to use for this considering the spatial/temporal resolution of ICESat-2.
-* ATL07 in the marginal ice zone - how can we extend the capability of this product in regions of low ice concentration? This might be important for understanding the potential for polynya detection with ICESat-2.
-* Analyze the various beams! Show the consistency between strong and weak etc. Why might we want to use the weak beam for sea ice science?!
-* How do ew better bin data considering the spatial/temporal sampling of IS2.
-* Create some interative tools to display and explore the products - combined maps/time series etc (maybe using Bokeh or Plot.ly)
-
-
-
-## To add to the repo during the hackweek
-
-* Add some info on ATL09 and the thickness product.
-* Show an example of reading in and processing a load of ATL07/10 files (maybe using dask).
-* Add some NESOSIM snow depth/density data.
 
 ## References
 
