@@ -1,6 +1,7 @@
 # ICESAT-2HackWeek -sea-ice-tutorials
 
 Authors: Ellen Buckley and Alek Petty 
+
 Date: June 2020
 
 ICESat-2 hackweek repository for the sea ice tutorials. Primarily hosts the Jupyter notebooks which contain the individual tutorials. 

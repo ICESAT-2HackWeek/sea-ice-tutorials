@@ -1,6 +1,7 @@
 # ICESAT-2HackWeek -sea-ice-tutorials
 
 Authors: Ellen Buckley and Alek Petty 
+
 Date: June 2020
 
 ICESat-2 hackweek repository for the sea ice tutorials. Primarily hosts the Jupyter notebooks which contain the individual tutorials. 
@@ -13,17 +14,7 @@ Earth image illustrating AMSR-E sea ice courtesy of the NASA Scientific Visualiz
 
 ## Setup
 
-This GitHub repository primarily hosts the Jupyter Notebooks needed for the hackweek tutorials. The notebooks should work without any extra steps if you're working in the ICESat-2 Pangeo environment that has been created for this hackweek. Just clone this repository into your Pangeo user account (git clone https://github.com/ICESAT-2HackWeek/sea-ice-tutorials when logged in). To run the notebooks on your local machine instead, a conda environment file (is2seaiceenv_environment.yml) has been provided in this repo for you to generate a Python environment that includes all the revelant libraries you might need:
-```
-conda env create -f is2seaiceenv_environment.yml
-```
-
-If this doesn't work you can try generating your own Python 3.7 conda environment that includes the packages we need (sometimes there are issues getting environment files like this working across mac/pc/linux platforms):
-```
-conda create -n is2env python=3.7 basemap xarray pandas netcdf4 pyproj scipy matplotlib h5py seaborn cartopy
-```
-
-The hackweek includes extra tutorials on conda (and miniconda) so see those resources for more information. 
+This GitHub repository primarily hosts the Jupyter Notebooks needed for the hackweek tutorials. The notebooks should work without any extra steps if you're working in the ICESat-2 Pangeo environment that has been created for this hackweek. Just clone this repository into your Pangeo user account (git clone https://github.com/ICESAT-2HackWeek/sea-ice-tutorials when logged in). 
 
 The example data files are being stored in the shared folder on Pangeo '/home/jovyan/tutorial-data/sea-ice/'. 
 
