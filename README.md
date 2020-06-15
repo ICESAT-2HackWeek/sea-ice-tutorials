@@ -1,4 +1,4 @@
-# ICESAT-2HackWeek -sea-ice-tutorials
+# ICESAT-2HackWeek-sea-ice-tutorials
 
 Authors: Ellen Buckley and Alek Petty 
 
@@ -24,18 +24,19 @@ The example data files are being stored in the shared folder on Pangeo '/home/jo
 1. ATL03.ipynb
 * General understanding of the data included in a typical ATL03 file.
 * Reading in, plotting and basic analysis of ATL03 data.
-* What we can learn from ATL03 to derive the ATL07 surface height segments!
+* Understanding along-track distance and time variables.
+* Understanding of differences between weak and strong beams
 
 2. ATL07.ipynb
 * General understanding of the data included in a typical ATL07 file.
 * Reading in, plotting and basic analysis of ATL07 data.
-* How is ATL07 data used to generate ATL10 sea ice freeboards and what to look out for when using either product.
+* How variables change with different surface types.
+* How clouds affect surface returns
 
 3. ATL10.ipynb
-* General understanding of the data included in a typical ATL10 file.
+* General understanding of the difference between ATL07 and ATL10
 * Reading in, plotting and basic analysis of ATL10 data.
-* How to use ATL10 freebaords to produce sea ice thickness estimates.
-* Examples of derived sea ice thicknesses.
+* How you too can calculate sea ice thickness from freeboard!
 
 
 ## Background
