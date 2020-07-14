@@ -21,6 +21,9 @@ The example data files are being stored in the shared folder on Pangeo '/home/jo
 
 ## Notebooks
 
+0. DataAccess.ipynb
+* run this notebook to download the ICESat-2 granules required for the tutorials
+
 1. ATL03.ipynb
 * General understanding of the data included in a typical ATL03 file.
 * Reading in, plotting and basic analysis of ATL03 data.
