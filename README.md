@@ -41,6 +41,9 @@ The example data files are being stored in the shared folder on Pangeo '/home/jo
 * Reading in, plotting and basic analysis of ATL10 data.
 * How you too can calculate sea ice thickness from freeboard!
 
+4. GriddingDemo.ipynb
+* demo binning of ICESat-2 along-track data to the 25 km NSIDC grid.
+
 
 ## Background
 
@@ -60,7 +63,7 @@ The ICESat-2 products of most interest to the sea ice community are:
 * ATL07: Along-track segment surace heights (2. ATL07.ipynb tutorial) 
 * ATL09: Cloud products (no direct tutorial provided, used mainly in ATL07 production for cloud filtering)
 * ATL10: Along-track segment (and 10 km swath) freeboards (3. ATL10.ipynb tutorial) 
-* ATL20: Gridded freeboard 
+* ATL20: Gridded monthly sea ice freeboard (expected release summer 2020).
 
 We provide in the notebooks a brief summary of these data products, but encourage the user to read the ATBD or references provided above and at the start of the Jupyter Notebooks for the more complete (and probably accurate) descriptions.
 
@@ -69,10 +72,10 @@ The ICESat-2 data products are provided in the Hierarchical Data Format – vers
 
 ## References
 
-Kwok, R., Cunningham, G. F., Hoffmann, J., Markus, T., 2016. Testing the ice-water discrimination and freeboard retrieval algorithms for the ICESat-2 mission, Remote Sensing of the Environment, 183, 13-25. 10.1016/j.rse.2016.05.011.
+Kwok, R., Markus, T., Kurtz, N. T., Petty, A. A., Neumann, T. A., Farrell, S. L., et al. (2019). Surface height and sea ice freeboard of the Arctic Ocean from ICESat-2: Characteristics and early results. Journal of Geophysical Research: Oceans, 124, doi: 10.1029/2019JC015486.
 
-Luthcke, S.B., Pennington, T., Rebold, T., Thomas,  T., 2018. Ice, Cloud, and land Elevation Satellite (ICESat-2) Project Algorithm Theoretical Basis Document for the ICESat-2 Receive Photon Geolocation.
+Markus, T., Neumann, T., Martino, A., Abdalati, W., Brunt, K., Csatho, B., et al. (2017). The Ice, Cloud and land Elevation Satellite-2 (ICESat-2): Science requirements, concept, and implementation. Remote Sensing of the Environment, 190, 260-273, doi: 10.1016/j.rse.2016.12.029.
 
-Markus, T., Neumann, T., Martino, A., Abdalati, W., Brunt, K., Csatho, B., Farrell, S., Fricker, H., Gardner, A., Harding, D., Jasinski, M., Kwok, R., Magruder, L., Lubin, D., Luthcke, S., Morison, J., Nelson, R., Neuenschwander, A., Palm, S., Popescu, S., Shum, C.K., Schutz, B.E., Smith, B., Yang, Y., Zwally, H.J., 2017. The Ice, Cloud and land Elevation Satellite-2 (ICESat-2): Science requirements, concept, and implementation. Remote Sensing of the Environment, 190, 260-273, doi: 10.1016/j.rse.2016.12.029.
+Neumann, T A., Martino, A. J., Markus, T., Bae, S., Bock, M. R., Brenner, A. C., et al. (2019). The Ice, Cloud, and Land Elevation Satellite – 2 mission: A global geolocated photon product derived from the Advanced Topographic Laser Altimeter System. Remote Sensing of Environment, 233, 111325, doi: 10.1016/j.rse.2019.111325.
 
-Martino, A.J., Bock, M.R., Jones R.L. III, Neumann, T.A., Hancock, D.W., Dabney, P.W., Webb, C.E., 2018. Ice Cloud and Land Elevation Satellite – 2 Project Algorithm Theoretical Basis Document for ATL02 (Level-1B) data product processing. 
+Petty, A. A., N. T. Kurtz, R. Kwok, T. Markus, T. A. Neumann (2020), Winter Arctic sea ice thickness from ICESat‐2 freeboards, Journal of Geophysical Research: Oceans, 125, e2019JC015764. doi: 10.1029/2019JC015764.
