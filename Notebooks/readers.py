@@ -8,7 +8,7 @@ import cartopy.crs as ccrs
 import h5py
 import scipy
 from astropy.time import Time
-from icepyx import icesat2data as ipd
+#from icepyx import icesat2data as ipd
 
 def getATL03(f,beam):
     # height of each received photon, relative to the WGS-84 ellipsoid (with some, not all corrections applied, see background info above)
